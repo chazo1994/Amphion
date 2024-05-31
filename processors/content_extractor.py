@@ -496,6 +496,7 @@ class MertExtractor(AudioPretrainedModelFeaturesExtractor):
 
 
 def extract_utt_content_features_dataloader(cfg, metadata, num_workers):
+    # print('metadata: {}'.format(metadata))
     dataset_name = metadata[0]["Dataset"]
     with torch.no_grad():
         if cfg.preprocess.extract_whisper_feature:

@@ -341,7 +341,7 @@ class TTSTrainer(BaseTrainer):
         self.accelerator.wait_for_everyone()
         # dump config file
         if self.accelerator.is_main_process:
-            self.__dump_cfg(self.config_save_path)
+            self._dump_cfg(self.config_save_path)
 
         # self.optimizer.zero_grad()
         # Wait to ensure good to go
@@ -608,7 +608,7 @@ class TTSTrainer(BaseTrainer):
                 f"Invalid gradient_accumulation_step value: {self.cfg.train.gradient_accumulation_step}. It should be positive."
             )
 
-    def __dump_cfg(self, path):
+    def _dump_cfg(self, path):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         json5.dump(
             self.cfg,

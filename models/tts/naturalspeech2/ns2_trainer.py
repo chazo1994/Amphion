@@ -132,7 +132,7 @@ class NS2Trainer(TTSTrainer):
                 self.logger.debug(self.model)
                 self.logger.info(f"Building model done in {(end - start) / 1e6:.2f}ms")
                 self.logger.info(
-                    f"Model parameters: {self._count_parameters(self.model)/1e6:.2f}M"
+                    f"Model parameters: {self.__count_parameters(self.model)/1e6:.2f}M"
                 )
 
         # optimizer & scheduler
@@ -796,3 +796,13 @@ class NS2Trainer(TTSTrainer):
                 )
             )
         self.accelerator.end_training()
+        
+    @staticmethod
+    def __count_parameters(model):
+        model_param = 0.0
+        if isinstance(model, dict):
+            for key, value in model.items():
+                model_param += sum(p.numel() for p in model[key].parameters())
+        else:
+            model_param = sum(p.numel() for p in model.parameters())
+        return model_param

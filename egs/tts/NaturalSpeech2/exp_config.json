@@ -3,9 +3,17 @@
     "dataset": [
       "libritts"
     ],
+    "dataset_path": {
+      // TODO: Fill in your dataset path
+      "libritts": "/data/data/01_LibriTTS/01_dev_set/dev-clean/LibriTTS"
+    },
     "preprocess": {
       // Specify the output root path to save the processed data 
       "processed_dir": "data",
+      "extract_phone": true,
+      "phone_extractor": "espeak", // "espeak, pypinyin, pypinyin_initials_finals, lexicon (only for language=en-us right now)"
+      "frameshift": 0.0125,
+      "language": "en-us",
       "train_file": "train.json",
       "valid_file": "test.json",
       "read_metadata": true,

@@ -124,10 +124,10 @@ def extract_utt_phone_sequence(dataset, cfg, metadata):
         phone_path = os.path.join(out_path, uid + ".phone")
         with open(phone_path, "w") as fin:
             fin.write(" ".join(phone_seq))
-
+        utt['phones'] = phone_seq
     if cfg.preprocess.phone_extractor != "lexicon":
         phone_extractor.save_dataset_phone_symbols_to_table()
-
+    return metadata
 
 def save_all_dataset_phone_symbols_to_table(self, cfg, dataset):
     #  phone symbols dict

@@ -1,11 +1,25 @@
+#!/bin/bash
 # Copyright (c) 2023 Amphion.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/thinh/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/thinh/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/thinh/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/thinh/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
 
 # Raise error if any command fails
 set -e
-
 # Install ffmpeg in Linux
 conda install -c conda-forge ffmpeg
 

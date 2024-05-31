@@ -12,7 +12,7 @@ import argparse
 import json
 import pyworld as pw
 from multiprocessing import cpu_count
-
+import numpy as np
 
 from utils.util import load_config
 from preprocessors.processor import preprocess_dataset, prepare_align
@@ -64,6 +64,7 @@ def extract_content_features(dataset, output_path, cfg, dataset_types, num_worke
         dataset_output = os.path.join(output_path, dataset)
         # dataset_file = os.path.join(dataset_output, "{}.json".format(dataset_type))
         dataset_file = os.path.join(dataset_output, "{}.json".format(dataset_type))
+        # print('dataset_type: {}, dataset_file: {}'.format(dataset_type, dataset_file))
         with open(dataset_file, "r") as f:
             metadata.extend(json.load(f))
 
@@ -82,13 +83,16 @@ def extract_phonme_sequences(dataset, output_path, cfg, dataset_types):
 
     """
 
-    metadata = []
+    
     for dataset_type in dataset_types:
+        metadata = []
         dataset_output = os.path.join(output_path, dataset)
         dataset_file = os.path.join(dataset_output, "{}.json".format(dataset_type))
         with open(dataset_file, "r") as f:
-            metadata.extend(json.load(f))
-    phone_extractor.extract_utt_phone_sequence(dataset, cfg, metadata)
+            metadata = json.load(f)
+        metadata = phone_extractor.extract_utt_phone_sequence(dataset, cfg, metadata)
+        with open(dataset_file, "w") as f:
+            json.dump(metadata, f, ensure_ascii=False, indent=4)
 
 
 def preprocess(cfg, args):
@@ -136,7 +140,7 @@ def preprocess(cfg, args):
             print("Augmentation datasets: ", cfg.dataset)
     except:
         print("No Data Augmentation.")
-
+    
     # json files
     dataset_types = list()
     dataset_types.append((cfg.preprocess.train_file).split(".")[0])
@@ -182,7 +186,7 @@ def preprocess(cfg, args):
 
         if cfg.preprocess.energy_norm:
             acoustic_extractor.normalize(dataset, cfg.preprocess.energy_dir, cfg)
-
+    
     # Copy acoustic features for augmented datasets by creating soft-links
     for dataset in cfg.dataset:
         if "pitch_shift" in dataset:
@@ -211,20 +215,35 @@ def preprocess(cfg, args):
 
         if cfg.preprocess.extract_pitch:
             acoustic_extractor.cal_pitch_statistics(dataset, output_path, cfg)
-
+    
     # Prepare the content features
     for dataset in cfg.dataset:
         print("Extracting content features for {}...".format(dataset))
         extract_content_features(
             dataset, output_path, cfg, dataset_types, args.num_workers
         )
-
     # Prepare the phenome squences
     if cfg.preprocess.extract_phone:
         for dataset in cfg.dataset:
             print("Extracting phoneme sequence for {}...".format(dataset))
             extract_phonme_sequences(dataset, output_path, cfg, dataset_types)
-
+    if cfg.preprocess.use_len:
+        for dataset in cfg.dataset:
+            for dataset_type in dataset_types:
+                metadata = []
+                dataset_output = os.path.join(output_path, dataset)
+                dataset_file = os.path.join(dataset_output, "{}.json".format(dataset_type))
+                with open(dataset_file, "r") as f:
+                    metadata = json.load(f)
+                for utt in metadata:
+                    frameshift = cfg.preprocess.frameshift
+                    duration = utt["Duration"]
+                    num_frames = int(np.ceil((duration - frameshift) / frameshift)) + 1
+                    utt['num_frames'] = num_frames
+                #metadata = phone_extractor.extract_utt_phone_sequence(dataset, cfg, metadata)
+                with open(dataset_file, "w") as f:
+                    json.dump(metadata, f, ensure_ascii=False, indent=4)
+                
 
 def main():
     parser = argparse.ArgumentParser()
@@ -236,7 +255,7 @@ def main():
 
     args = parser.parse_args()
     cfg = load_config(args.config)
-
+    # print('prepare_alignment: {}'.format(args.prepare_alignment))
     preprocess(cfg, args)
 
 

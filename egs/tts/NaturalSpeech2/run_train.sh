@@ -17,7 +17,7 @@ exp_config="$exp_dir/exp_config.json"
 exp_name="ns2_libritts"
 
 ######## Train Model ###########
-CUDA_VISIBLE_DEVICES="0" accelerate \
+CUDA_VISIBLE_DEVICES="0" accelerate launch \
     "${work_dir}"/bins/tts/train.py \
     --config=$exp_config \
     --exp_name=$exp_name \

@@ -23,25 +23,25 @@ def libritts_statistics(data_dir):
 
     for distribution_info in distribution_infos:
         distribution = distribution_info.split("/")[-1]
-        print(distribution)
-
+        # print('distribution: {}'.format(distribution))
+        
         speaker_infos = glob(distribution_info + "/*")
-
+        
+        
         if len(speaker_infos) == 0:
             continue
 
         for speaker_info in speaker_infos:
             speaker = speaker_info.split("/")[-1]
-
+            # print('speaker: {}, speaker_info: {}'.format(speaker, speaker_info))
             speakers.append(speaker)
-
             pharase_infos = glob(speaker_info + "/*")
-
+            # print('speaker: {}, pharase_infos: {}'.format(speaker, pharase_infos))
+            
             for pharase_info in pharase_infos:
                 pharase = pharase_info.split("/")[-1]
-
                 utts = glob(pharase_info + "/*.wav")
-
+                # print('pharase_info: {}, utts: {}'.format(pharase_info, utts))
                 for utt in utts:
                     uid = utt.split("/")[-1].split(".")[0]
                     distribution2speakers2pharases2utts[distribution][speaker][
@@ -52,6 +52,7 @@ def libritts_statistics(data_dir):
     unique_speakers.sort()
 
     print("Speakers: \n{}".format("\t".join(unique_speakers)))
+    
     return distribution2speakers2pharases2utts, unique_speakers
 
 
@@ -66,17 +67,18 @@ def main(output_path, dataset_path):
     valid_output_file = os.path.join(save_dir, "valid.json")
     singer_dict_file = os.path.join(save_dir, "singers.json")
     utt2singer_file = os.path.join(save_dir, "utt2singer")
-    if has_existed(train_output_file):
-        return
+    # print('train_output_file: {}'.format(train_output_file))
+    # if has_existed(train_output_file):
+    #     return
     utt2singer = open(utt2singer_file, "w")
 
     # Load
     libritts_path = dataset_path
-
+    # print('libritts_path: {}'.format(libritts_path))
     distribution2speakers2pharases2utts, unique_speakers = libritts_statistics(
         libritts_path
     )
-
+    # print('distribution2speakers2pharases2utts: {}'.format(distribution2speakers2pharases2utts))
     # We select pharases of standard spekaer as test songs
     train = []
     test = []
@@ -93,7 +95,9 @@ def main(output_path, dataset_path):
     for distribution, speakers2pharases2utts in tqdm(
         distribution2speakers2pharases2utts.items()
     ):
+        # print(f'distribution: {distribution}, speakers2pharases2utts: {speakers2pharases2utts}')
         for speaker, pharases2utts in tqdm(speakers2pharases2utts.items()):
+            # print(f'speaker: {speaker}, pharases2utts: {pharases2utts}')
             pharase_names = list(pharases2utts.keys())
 
             for chosen_pharase in pharase_names:
@@ -101,6 +105,7 @@ def main(output_path, dataset_path):
                     res = {
                         "Dataset": "libritts",
                         "Singer": speaker,
+                        "speaker": speaker,
                         "Uid": "{}#{}#{}#{}".format(
                             distribution, speaker, chosen_pharase, chosen_uid
                         ),
