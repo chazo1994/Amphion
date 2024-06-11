@@ -227,7 +227,8 @@ def preprocess(cfg, args):
         for dataset in cfg.dataset:
             print("Extracting phoneme sequence for {}...".format(dataset))
             extract_phonme_sequences(dataset, output_path, cfg, dataset_types)
-    if cfg.preprocess.use_len:
+    use_len = getattr(cfg.preprocess, 'use_len', False)
+    if use_len:
         for dataset in cfg.dataset:
             for dataset_type in dataset_types:
                 metadata = []

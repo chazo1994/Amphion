@@ -16,7 +16,7 @@ export PYTHONIOENCODING=UTF-8
 # cd $work_dir/modules/monotonic_align
 # mkdir -p monotonic_align
 # python setup.py build_ext --inplace
-cd $work_dir
+# cd $work_dir
 
 mfa_dir=$work_dir/pretrained/mfa
 echo $mfa_dir

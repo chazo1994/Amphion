@@ -1,0 +1,230 @@
+{
+    "supported_model_type": [
+        "Fastspeech2",
+        "VITS",
+        "VALLE",
+        "NaturalSpeech2"
+    ],
+    "task_type": "tts",
+    "dataset": [
+        "LJSpeech"
+    ],
+    "use_custom_dataset": [],
+    "preprocess": {
+        "phone_extractor": "lexicon",
+        "data_augment": false,
+        "trim_silence": false,
+        "num_silent_frames": 8,
+        "trim_fft_size": 512,
+        "trim_hop_size": 128,
+        "trim_top_db": 30,
+        "extract_mel": true,
+        "mel_extract_mode": "taco",
+        "extract_linear_spec": false,
+        "extract_mcep": false,
+        "extract_pitch": true,
+        "extract_acoustic_token": false,
+        "pitch_remove_outlier": true,
+        "extract_uv": false,
+        "pitch_norm": true,
+        "extract_audio": true,
+        "extract_label": false,
+        "pitch_extractor": "dio",
+        "extract_energy": true,
+        "energy_remove_outlier": true,
+        "energy_norm": true,
+        "energy_extract_mode": "from_tacotron_stft",
+        "extract_duration": true,
+        "extract_amplitude_phase": false,
+        "mel_min_max_norm": false,
+        "extract_phone": true,
+        "lexicon_path": "./text/lexicon/librispeech-lexicon.txt",
+        "extract_whisper_feature": false,
+        "extract_contentvec_feature": false,
+        "extract_mert_feature": false,
+        "extract_wenet_feature": false,
+        "n_mel": 80,
+        "win_size": 1024,
+        "hop_size": 256,
+        "sample_rate": 22050,
+        "n_fft": 1024,
+        "fmin": 0,
+        "fmax": 8000,
+        "min_level_db": -115,
+        "ref_level_db": 20,
+        "bits": 8,
+        "processed_dir": "data",
+        "trimmed_wav_dir": "trimmed_wavs",
+        "raw_data": "raw_data",
+        "phone_dir": "phones",
+        "wav_dir": "wavs",
+        "audio_dir": "audios",
+        "log_amplitude_dir": "log_amplitudes",
+        "phase_dir": "phases",
+        "real_dir": "reals",
+        "imaginary_dir": "imaginarys",
+        "label_dir": "labels",
+        "linear_dir": "linears",
+        "mel_dir": "mels",
+        "mcep_dir": "mcep",
+        "dur_dir": "durs",
+        "symbols_dict": "symbols.dict",
+        "lab_dir": "labs",
+        "wenet_dir": "wenet",
+        "contentvec_dir": "contentvec",
+        "pitch_dir": "pitches",
+        "energy_dir": "energys",
+        "phone_pitch_dir": "phone_pitches",
+        "phone_energy_dir": "phone_energys",
+        "uv_dir": "uvs",
+        "duration_dir": "duration",
+        "phone_seq_file": "phone_seq_file",
+        "file_lst": "file.lst",
+        "train_file": "train.json",
+        "valid_file": "test.json",
+        "spk2id": "spk2id.json",
+        "utt2spk": "utt2spk",
+        "emo2id": "emo2id.json",
+        "utt2emo": "utt2emo",
+        "use_text": false,
+        "use_phone": false,
+        "use_phn_seq": false,
+        "use_lab": false,
+        "use_linear": false,
+        "use_mel": true,
+        "use_min_max_norm_mel": false,
+        "use_wav": false,
+        "use_phone_pitch": true,
+        "use_log_scale_pitch": false,
+        "use_phone_energy": true,
+        "use_phone_duration": false,
+        "use_log_scale_energy": false,
+        "use_wenet": false,
+        "use_dur": false,
+        "use_spkid": false,
+        "use_emoid": false,
+        "use_frame_pitch": false,
+        "use_uv": false,
+        "use_frame_energy": false,
+        "use_frame_duration": false,
+        "use_audio": false,
+        "use_label": false,
+        "use_one_hot": false,
+        "use_amplitude_phase": false,
+        "align_mel_duration": true,
+        "language": "en-us",
+        "add_blank": true,
+        "text_cleaners": [
+            "english_cleaners"
+        ],
+        "f0_min": 71,
+        "f0_max": 800,
+        "pitch_bin": 256,
+        "pitch_max": 1100.0,
+        "pitch_min": 50.0,
+        "is_label": true,
+        "is_mu_law": true,
+        "mel_min_max_stats_dir": "mel_min_max_stats",
+        "whisper_dir": "whisper",
+        "content_vector_dir": "content_vector",
+        "mert_dir": "mert"
+    },
+    "train": {
+        "ddp": true,
+        "batch_size": 16,
+        "max_steps": 1000000,
+        "tracker": [
+            "tensorboard"
+        ],
+        "max_epoch": 100,
+        "save_checkpoint_stride": [
+            5,
+            20
+        ],
+        "keep_last": [
+            3,
+            -1
+        ],
+        "run_eval": [
+            false,
+            true
+        ],
+        "random_seed": 10086,
+        "optimizer": "Adam",
+        "adamw": {
+            "lr": 0.0004
+        },
+        "scheduler": "NoamLR",
+        "reducelronplateau": {
+            "factor": 0.8,
+            "patience": 10,
+            "min_lr": 0.0001
+        },
+        "sampler": {
+            "holistic_shuffle": true,
+            "drop_last": true
+        },
+        "dataloader": {
+            "num_worker": 8,
+            "pin_memory": true
+        },
+        "gradient_accumulation_step": 1,
+        "total_training_steps": 50000,
+        "save_summary_steps": 500,
+        "save_checkpoints_steps": 10000,
+        "valid_interval": 10000,
+        "keep_checkpoint_max": 5,
+        "multi_speaker_training": false,
+        "sort_sample": true,
+        "drop_last": true,
+        "group_size": 4,
+        "grad_clip_thresh": 1.0,
+        "lr_scheduler": {
+            "num_warmup": 4000
+        },
+        "adam": {
+            "lr": 0.0625,
+            "betas": [
+                0.9,
+                0.98
+            ],
+            "eps": 1e-09,
+            "weight_decay": 0.0
+        }
+    },
+    "base_config": "config/fs2.json",
+    "model": {
+        "text_token_num": 512,
+        "transformer": {
+            "encoder_layer": 4,
+            "encoder_head": 2,
+            "encoder_hidden": 256,
+            "decoder_layer": 6,
+            "decoder_head": 2,
+            "decoder_hidden": 256,
+            "conv_filter_size": 1024,
+            "conv_kernel_size": [
+                9,
+                1
+            ],
+            "encoder_dropout": 0.2,
+            "decoder_dropout": 0.2
+        },
+        "variance_predictor": {
+            "filter_size": 256,
+            "kernel_size": 3,
+            "dropout": 0.5
+        },
+        "variance_embedding": {
+            "pitch_quantization": "linear",
+            "energy_quantization": "linear",
+            "n_bins": 256
+        },
+        "max_seq_len": 1000
+    },
+    "model_type": "FastSpeech2",
+    "dataset_path": {
+        "LJSpeech": "[LJSpeech dataset path]"
+    },
+    "log_dir": "ckpts/tts"
+}

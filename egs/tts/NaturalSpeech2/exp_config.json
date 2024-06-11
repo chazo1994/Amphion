@@ -3,6 +3,7 @@
     "dataset": [
       "libritts"
     ],
+    "task_type": "tts",
     "dataset_path": {
       // TODO: Fill in your dataset path
       "libritts": "/data/data/01_LibriTTS/01_dev_set/dev-clean/LibriTTS"
@@ -16,7 +17,7 @@
       "language": "en-us",
       "train_file": "train.json",
       "valid_file": "test.json",
-      "read_metadata": true,
+      "read_metadata": false,
       "metadata_dir": "metadata"
     },
     // Specify the output root path to save model ckpts and logs

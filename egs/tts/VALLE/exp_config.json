@@ -5,7 +5,7 @@
         "libritts"
     ],
     "dataset_path": {
-        "libritts": "[LibriTTS dataset path]"
+        "libritts": "/data/data/01_LibriTTS/01_dev_set/dev-clean/LibriTTS"
     },
     "preprocess": {
         "extract_phone": true,

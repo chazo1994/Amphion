@@ -455,6 +455,9 @@ def load_config(config_fn, lowercase=False):
     """
     config_ = _load_config(config_fn, lowercase=lowercase)
     # create an JsonHParams object with configuration dict
+    full_config_file = os.path.join(os.path.dirname(config_fn), 'full_config.json')
+    with open(full_config_file, 'w') as f:
+        json5.dump(config_, f, ensure_ascii=False, indent=4, quote_keys=True, trailing_commas=False)
     cfg = JsonHParams(**config_)
     return cfg
 
