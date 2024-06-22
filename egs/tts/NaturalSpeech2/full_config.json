@@ -7,7 +7,7 @@
         "EDM",
         "CD"
     ],
-    "task_type": "",
+    "task_type": "tts",
     "dataset": [
         "libritts"
     ],
@@ -25,7 +25,7 @@
         "extract_linear_spec": false,
         "extract_mcep": false,
         "extract_pitch": false,
-        "extract_acoustic_token": false,
+        "extract_acoustic_token": true,
         "pitch_remove_outlier": false,
         "extract_uv": false,
         "pitch_norm": false,
@@ -36,7 +36,7 @@
         "energy_remove_outlier": false,
         "energy_norm": false,
         "energy_extract_mode": "from_mel",
-        "extract_duration": false,
+        "extract_duration": true,
         "extract_amplitude_phase": false,
         "mel_min_max_norm": false,
         "extract_phone": true,
@@ -125,6 +125,9 @@
         "metadata_dir": "metadata",
         "read_metadata": false,
         "frameshift": 0.0125,
+        "acoustic_token_extractor": "Encodec",
+        "target_bandwidth": 12.0,
+        "acoustic_token_dir": "acoutic_tokens",
         "language": "en-us"
     },
     "train": {

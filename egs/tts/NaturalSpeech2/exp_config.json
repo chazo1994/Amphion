@@ -14,6 +14,12 @@
       "extract_phone": true,
       "phone_extractor": "espeak", // "espeak, pypinyin, pypinyin_initials_finals, lexicon (only for language=en-us right now)"
       "frameshift": 0.0125,
+      "extract_acoustic_token": true,
+      "acoustic_token_extractor": "Encodec",
+      "target_bandwidth": 12.0,
+      "acoustic_token_dir": "acoutic_tokens",
+      "extract_duration": true,
+      "duration_dir": "duration",
       "language": "en-us",
       "train_file": "train.json",
       "valid_file": "test.json",

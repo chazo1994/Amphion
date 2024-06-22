@@ -21,11 +21,11 @@ export PYTHONIOENCODING=UTF-8
 mfa_dir=$work_dir/pretrained/mfa
 echo $mfa_dir
 
-######## Features Extraction ###########
-# if [ ! -d "$mfa_dir/montreal-forced-aligner" ]; then
-#     bash ${exp_dir}/prepare_mfa.sh
-# fi
+####### Features Extraction ###########
+if [ ! -d "$mfa_dir/montreal-forced-aligner" ]; then
+    bash ${exp_dir}/prepare_mfa.sh
+fi
 CUDA_VISIBLE_DEVICES=$gpu python "${work_dir}"/bins/tts/preprocess.py \
     --config=$exp_config \
-    --num_workers=4 || exit 1
-    # --prepare_alignment=False
+    --num_workers=8 || exit 1
+    --prepare_alignment=True
