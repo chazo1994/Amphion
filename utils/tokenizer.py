@@ -8,6 +8,7 @@
 
 import re
 from typing import Any, Dict, List, Optional, Pattern, Union
+import sys
 
 import torch
 import torchaudio
@@ -130,9 +131,9 @@ def remove_encodec_weight_norm(model):
             remove_weight_norm(decoder._modules[key].conv.conv)
 
 
-def extract_encodec_token(wav_path):
+def extract_encodec_token(wav_path, target_bandwidth=6.0):
     model = EncodecModel.encodec_model_24khz()
-    model.set_target_bandwidth(6.0)
+    model.set_target_bandwidth(target_bandwidth)
 
     wav, sr = torchaudio.load(wav_path)
     wav = convert_audio(wav, sr, model.sample_rate, model.channels)
@@ -148,3 +149,7 @@ def extract_encodec_token(wav_path):
         codes = codes_.cpu().numpy()[0, :, :].T  # [T, 8]
 
         return codes
+if __name__=='__main__':
+    input_wav = sys.argv[1]
+    codes = extract_encodec_token(input_wav, target_bandwidth=12.0)
+    print('codes:{}, shape: {}'.format(codes, codes.shape))

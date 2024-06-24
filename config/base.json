@@ -41,7 +41,7 @@
     "mel_min_max_norm": false,
     // lingusitic features
     "extract_phone": false,
-    "lexicon_path": "./text/lexicon/librispeech-lexicon.txt",
+    "lexicon_path": "text/lexicon/librispeech-lexicon.txt",
     // content features
     "extract_whisper_feature": false,
     "extract_contentvec_feature": false,

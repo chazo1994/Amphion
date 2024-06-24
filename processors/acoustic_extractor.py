@@ -254,6 +254,7 @@ def extract_utt_acoustic_features_tts(dataset_output, cfg, utt):
 
         # extract features
         if cfg.preprocess.extract_duration:
+            # print('utt: {}'.format(utt))
             durations, phones, start, end = duration.get_duration(
                 utt, wav, cfg.preprocess
             )
@@ -359,7 +360,8 @@ def extract_utt_acoustic_features_tts(dataset_output, cfg, utt):
 
         if cfg.preprocess.extract_acoustic_token:
             if cfg.preprocess.acoustic_token_extractor == "Encodec":
-                codes = extract_encodec_token(wav_path)
+                target_bandwidth = getattr(cfg.preprocess, 'target_bandwidth', 6.0)
+                codes = extract_encodec_token(wav_path, target_bandwidth=target_bandwidth)
                 save_feature(
                     dataset_output, cfg.preprocess.acoustic_token_dir, uid, codes
                 )

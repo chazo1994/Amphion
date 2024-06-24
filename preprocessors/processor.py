@@ -77,7 +77,7 @@ def preprocess_dataset(
     if dataset == "svcceval":
         svcceval.main(output_path, dataset_path)
     if dataset == "libritts":
-        libritts.main(output_path, dataset_path)
+        libritts.main(output_path, dataset_path, cfg)
     if dataset == "lijian":
         lijian.main(output_path, dataset_path)
     if dataset == "cdmusiceval":
@@ -98,7 +98,7 @@ def preprocess_dataset(
         hifitts.main(output_path, dataset_path)
 
 
-def prepare_align(dataset, dataset_path, cfg, output_path):
+def prepare_align(dataset, dataset_path, cfg, output_path, n_jobs = 8):
     """Call specific function to handle specific dataset
 
     Args:
@@ -108,3 +108,5 @@ def prepare_align(dataset, dataset_path, cfg, output_path):
     """
     if dataset == "LJSpeech":
         ljspeech.prepare_align(dataset, dataset_path, cfg, output_path)
+    elif dataset == "libritts":
+        libritts.prepare_align(dataset, dataset_path, cfg, output_path, jobs=n_jobs)

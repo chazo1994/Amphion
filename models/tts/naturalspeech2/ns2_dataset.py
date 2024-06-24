@@ -54,6 +54,7 @@ class NS2Dataset(torch.utils.data.Dataset):
 
         assert cfg.preprocess.use_code == True
         if cfg.preprocess.use_code:
+            assert cfg.preprocess.extract_acoustic_token == True
             self.utt2code_path = {}
             for utt_info in self.metadata:
                 dataset = utt_info["Dataset"]
@@ -63,7 +64,7 @@ class NS2Dataset(torch.utils.data.Dataset):
                 self.utt2code_path[utt] = os.path.join(
                     cfg.preprocess.processed_dir,
                     dataset,
-                    cfg.preprocess.code_dir,  # code
+                    cfg.preprocess.acoustic_token_dir,  # code
                     utt_info["speaker"],
                     uid + ".npy",
                 )
@@ -214,7 +215,7 @@ class NS2Dataset(torch.utils.data.Dataset):
 
         else:
             # code
-            code = np.load(self.utt2code_path[utt])
+            code = np.load(self.utt2code_path[utt]) # Shape B x Frame Num x Number Codebook
             # frame_nums
             frame_nums = code.shape[1]
             # pitch

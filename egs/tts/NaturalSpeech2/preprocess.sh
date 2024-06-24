@@ -25,7 +25,11 @@ echo $mfa_dir
 if [ ! -d "$mfa_dir/montreal-forced-aligner" ]; then
     bash ${exp_dir}/prepare_mfa.sh
 fi
+# CUDA_VISIBLE_DEVICES=$gpu python "${work_dir}"/bins/tts/preprocess.py \
+#     --config=$exp_config \
+#     --num_workers=8 \
+#     --prepare_alignment=true || exit 1
+
 CUDA_VISIBLE_DEVICES=$gpu python "${work_dir}"/bins/tts/preprocess.py \
     --config=$exp_config \
     --num_workers=8 || exit 1
-    --prepare_alignment=True

@@ -109,14 +109,13 @@ def preprocess(cfg, args):
     # Split train and test sets
     for dataset in cfg.dataset:
         print("Preprocess {}...".format(dataset))
-
         if args.prepare_alignment:
             # Prepare alignment with MFA
             print("Prepare alignment {}...".format(dataset))
             prepare_align(
-                dataset, cfg.dataset_path[dataset], cfg.preprocess, output_path
+                dataset, cfg.dataset_path[dataset], cfg.preprocess, output_path, n_jobs = args.num_workers
             )
-
+        
         preprocess_dataset(
             dataset,
             cfg.dataset_path[dataset],
@@ -256,7 +255,6 @@ def main():
 
     args = parser.parse_args()
     cfg = load_config(args.config)
-    # print('prepare_alignment: {}'.format(args.prepare_alignment))
     preprocess(cfg, args)
 
 

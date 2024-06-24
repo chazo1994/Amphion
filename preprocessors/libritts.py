@@ -11,7 +11,72 @@ from glob import glob
 from collections import defaultdict
 
 from utils.util import has_existed
+from utils.duration import verify_alignment
+from preprocessors.ljspeech import textgird_extract
 
+
+def prepare_align(dataset, dataset_path, cfg, output_path, jobs=8):
+    libritts_path = dataset_path
+    distribution2speakers2pharases2utts, unique_speakers = libritts_statistics(
+        libritts_path
+    )
+    corpus_path = os.path.join(output_path, dataset, cfg.raw_data)
+    textgrid_directory=os.path.join(output_path, dataset, "TextGrid")
+    os.makedirs(corpus_path, exist_ok=True)
+    os.makedirs(textgrid_directory, exist_ok=True)
+    for distribution, speakers2pharases2utts in tqdm(
+        distribution2speakers2pharases2utts.items()
+    ):
+        # print(f'distribution: {distribution}, speakers2pharases2utts: {speakers2pharases2utts}')
+            # print('distribution2speakers2pharases2utts: {}'.format(distribution2speakers2pharases2utts))
+        for speaker, pharases2utts in tqdm(speakers2pharases2utts.items()):
+            # print(f'speaker: {speaker}, pharases2utts: {pharases2utts}')
+            pharase_names = list(pharases2utts.keys())
+            for chosen_pharase in pharase_names:
+                for chosen_uid in pharases2utts[chosen_pharase]:
+                    speaker_corpus_dir = os.path.join(corpus_path, speaker)
+                    if not os.path.isdir(speaker_corpus_dir):
+                        os.makedirs(speaker_corpus_dir)
+                    wav_filename = chosen_uid + '.wav'
+                    wav_path = f"{dataset_path}/{distribution}/{speaker}/{chosen_pharase}/{wav_filename}"
+                    corpus_wav_path = os.path.join(speaker_corpus_dir, wav_filename)
+                    text_filename = chosen_uid +'.normalized.txt'
+                    text_path = f"{dataset_path}/{distribution}/{speaker}/{chosen_pharase}/{text_filename}"
+                    corpus_text_path = os.path.join(speaker_corpus_dir, chosen_uid + '.lab')
+                    if not os.path.isfile(corpus_wav_path):
+                        os.symlink(wav_path, corpus_wav_path) # The MFA will default convert sampling rate to 16000 itself.
+                    if not os.path.isfile(corpus_text_path):
+                        os.symlink(text_path, corpus_text_path)
+    lexicon_path = os.path.join(os.environ['WORK_DIR'], cfg.lexicon_path)
+    mfa_path=os.path.join(
+        os.environ['WORK_DIR'], "pretrained", "mfa", "montreal-forced-aligner", "bin", "mfa_train_and_align"
+    )
+    mfa_validate_path = os.path.join(
+        os.environ['WORK_DIR'], "pretrained", "mfa", "montreal-forced-aligner", "bin", "mfa_validate_dataset"
+    )
+    assert os.path.exists(mfa_path), 'mfa path: {} is not exist'.format(mfa_path)
+    assert os.path.exists(lexicon_path), 'lexicon_path: {} is not exist'.format(lexicon_path)
+    assert os.path.exists(mfa_validate_path), 'mfa_validate_path: {} is not exist'.format(mfa_validate_path)
+    
+    saved_mfa_model = os.path.join(os.path.join(output_path, dataset, "mfa_model.zip"))
+    if os.path.isfile(saved_mfa_model):
+        mfa_align_path = os.path.join(
+            os.environ['WORK_DIR'], "pretrained", "mfa", "montreal-forced-aligner", "bin", "mfa_align"
+        )
+        assert os.path.exists(mfa_align_path), 'mfa_align_path: {} is not exist'.format(mfa_align_path)
+        print('Train and Align with saved MFA model {}'.format(saved_mfa_model))
+        os.system(
+            f"{mfa_align_path} {corpus_path} {lexicon_path} {saved_mfa_model} {textgrid_directory} -j {jobs} --clean"
+        )
+    else:
+        print('Validate alignment data')
+        os.system(f"{mfa_validate_path} {corpus_path} {lexicon_path}")
+        print('Train and Align with MFA')
+        
+        os.system(
+            f"{mfa_path} {corpus_path} {lexicon_path} {textgrid_directory} -o {saved_mfa_model} -j {jobs} --clean"
+        )
+    print('Alignment Completed')
 
 def libritts_statistics(data_dir):
     speakers = []
@@ -52,11 +117,10 @@ def libritts_statistics(data_dir):
     unique_speakers.sort()
 
     print("Speakers: \n{}".format("\t".join(unique_speakers)))
-    
     return distribution2speakers2pharases2utts, unique_speakers
 
 
-def main(output_path, dataset_path):
+def main(output_path, dataset_path, cfg):
     print("-" * 10)
     print("Preparing samples for libritts...\n")
 
@@ -74,6 +138,7 @@ def main(output_path, dataset_path):
 
     # Load
     libritts_path = dataset_path
+    text_grid_path=os.path.join(save_dir, 'TextGrid')
     # print('libritts_path: {}'.format(libritts_path))
     distribution2speakers2pharases2utts, unique_speakers = libritts_statistics(
         libritts_path
@@ -96,19 +161,35 @@ def main(output_path, dataset_path):
         distribution2speakers2pharases2utts.items()
     ):
         # print(f'distribution: {distribution}, speakers2pharases2utts: {speakers2pharases2utts}')
+            # print('distribution2speakers2pharases2utts: {}'.format(distribution2speakers2pharases2utts))
+
         for speaker, pharases2utts in tqdm(speakers2pharases2utts.items()):
             # print(f'speaker: {speaker}, pharases2utts: {pharases2utts}')
             pharase_names = list(pharases2utts.keys())
 
             for chosen_pharase in pharase_names:
+                 
+
                 for chosen_uid in pharases2utts[chosen_pharase]:
+                    # if chosen_uid == '2428_83705_000000_000000':
+                    #     print('tg file: {}'.format(os.path.join(text_grid_path, speaker, chosen_uid + '.TextGrid')))
+                    #     os._exit(1)
+                    text_grid_file = os.path.join(text_grid_path, speaker, chosen_uid + '.TextGrid')
+                    if text_grid_path is not None and (not os.path.isfile(text_grid_file) or not verify_alignment(text_grid_file, cfg)):
+                        # Only choose the aligned files
+                        # print('text_grid_path: {}'.format(text_grid_path))
+                        # print('text_grid_file: {}'.format(text_grid_file))
+                        continue
+                    # print("distribution: {}, speaker: {}, chosen_pharase: {}, chosen_uid: {}".format(distribution, speaker, chosen_pharase, chosen_uid))
+                    # os._exit(1)
                     res = {
                         "Dataset": "libritts",
                         "Singer": speaker,
                         "speaker": speaker,
-                        "Uid": "{}#{}#{}#{}".format(
-                            distribution, speaker, chosen_pharase, chosen_uid
-                        ),
+                        # "Uid": "{}#{}#{}#{}".format(
+                        #     distribution, speaker, chosen_pharase, chosen_uid
+                        # ),
+                        "Uid": chosen_uid,
                     }
                     res["Path"] = "{}/{}/{}/{}.wav".format(
                         distribution, speaker, chosen_pharase, chosen_uid

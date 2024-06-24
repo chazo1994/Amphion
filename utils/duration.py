@@ -84,3 +84,15 @@ def get_duration(utt, wav, cfg):
         return None
 
     return duration, text, int(sample_rate * start), int(sample_rate * end)
+def verify_alignment(tg_path, cfg):
+    
+    textgrid = tgt.io.read_textgrid(tg_path)
+    phone, duration, start, end = get_alignment(
+        textgrid.get_tier_by_name("phones"), cfg
+    )
+    text = "{" + " ".join(phone) + "}"
+    # print('tg_path: {}, start: {}, end: {}'.format(tg_path, start, end))
+    if start >= end:
+        
+        return False
+    return True

@@ -40,7 +40,7 @@
         "extract_amplitude_phase": false,
         "mel_min_max_norm": false,
         "extract_phone": true,
-        "lexicon_path": "./text/lexicon/librispeech-lexicon.txt",
+        "lexicon_path": "text/lexicon/librispeech-lexicon.txt",
         "extract_whisper_feature": false,
         "extract_contentvec_feature": false,
         "extract_mert_feature": false,
